@@ -11,7 +11,7 @@ A direct manipulation as in other high-level languages ​​or servers is not p
 
 More and more attack vectors on SAP systems have to deal with ABAP code that is used as a Trojan or that already poses a threat by itself. In one of my recent investigations with an SAP customer, I found an ABAP report in the production environment that completely cleared all FI tables (DROP Table Statements) without warning. With one stroke, his complete, worldwide bookkeeping would have been gone into nirvana, not recoverable.  Inadvertent execution would have had disastrous consequences. It turned out that this ABAP was used at the first launch in the 90s to reset the system in case of initial data loading. The ABAP was forgotten ever since and never deleted.
 
-There are tools with which the customer-specific programs can be analyzed in a mass procedure. The results and findings will then have to be translated into a „get clean“ project and then into a „stay clean“ project. Here are in particular the CodeProfiler of Virtual Forge and the Code Vulnerability Analyzer of SAP to mention. Both of them had their Pro’s and Con’s, but they server both this specific purpose.
+There are tools with which the customer-specific programs can be analyzed in a mass procedure. The results and findings will then have to be translated into a „get clean“ project and then into a „stay clean“ project. Here are in particular the Alchemist by xiting and the Code Vulnerability Analyzer of SAP to mention. Both of them had their Pro’s and Con’s, but they serve both this specific purpose.
 
 The security scope of these projects can range from „just“ getting rid of old risks up to using continous „stay clean“ for large off-shore groups of  developers.
 
