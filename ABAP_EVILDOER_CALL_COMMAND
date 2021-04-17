@@ -1,0 +1,56 @@
+In an average SAP installation, after decades of programming, a good 10,000 customer-specific programs were created, which were optimized in terms of performance, quality and maintenance, but were never checked for security requirements. Why should that have happened?
+So the attack vectors due to unsafe ABAP code are on a different level. As a rule, they are always present when something is triggered directly from an input variable (screen parameter)
+becomes.
+
+The example from the following listing, which generally stands for the dynamic handling of tables and data, is intended to show what the problem is.
+
+*&---------------------------------------------------------------------*
+*& Report  ZSEC_EVILDOER_COMMAND
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+Report  ZSEC_EVILDOER_COMMAND .
+parameters : unixcom like   rlgrap-filename default 'ls -lisl'.
+
+data: begin of tabl, "occurs 500,
+        line(400) ,
+     end of tabl.
+
+data: lt_tabl like table of tabl.
+data: ls_tabl like tabl.
+
+call 'SYSTEM' id 'COMMAND' field unixcom
+              id 'TAB'     field lt_tabl.
+
+write: / 'Pwn2OwnFertig: ', sy-subrc.
+
+loop at lt_tabl into ls_tabl.
+  write: / ls_tabl-line.
+endloop.
+
+In this case, any operating system command entered in the screen variable unixcom will be executed without a security check being carried out. So there are two problems: first, the direct call, which is obsolete according to current guidelines and should no longer be used due to missing authorization checks. The second problem is the missing preceding authorization check, which should at least exist.
+The fixing would consist of replacing the old, direct system call with a system module specially developed by SAP and converting the program accordingly.
+
+CALL FUNCTION 'SXPG_COMMAND_EXECUTE'
+ EXPORTING
+ commandname = 'ZPING'
+ additional_parameters = ls_parameters
+ operatingsystem = 'Windows NT'
+ IMPORTING
+ status = lv_status
+ exitcode = lv_exitcode
+ TABLES
+ exec_protocol = lt_btcxpm
+ EXCEPTIONS
+ no_permission = 1
+OTHERS = 15.
+ IF sy-subrc <> 0.
+ MESSAGE 'Error in Execution' Type 'E'.
+ ENDIF.
+ 
+ This example shows that an improvement in security would mean an intervention in the source code. Assuming that the function was used as it is outlined in the examples, the changes would be substantial and a new test by the developer - and above all by the user - would be absolutely necessary.
+Sustainably managed projects for ABAP code security of customer programs require a lot of time. If more than 3000 programs have to be checked and if a large group of developers is to be led to sustainable programming in the area of ​​SAP security, then it takes more than a year. Security does not come overnight and even if a faulty program can be fixed in an hour, testing by the specialist department can potentially take several hours, which add up to long project times.
+
+Nevertheless, there is no getting around the topic of SAP code security, because there are massive security gaps, especially in systems that have evolved over time.
